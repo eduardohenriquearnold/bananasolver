@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Add the executable
-add_executable(bananagrams src/main.cpp src/dictionary.cpp)
+add_executable(bananagrams src/main.cpp src/dictionary.cpp src/board.cpp)
 
 # Include directories
 target_include_directories(bananagrams PRIVATE src)
