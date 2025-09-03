@@ -1,5 +1,7 @@
-#include "dictionary.hpp"
 #include <fstream>
+#include <algorithm>
+
+#include "dictionary.hpp"
 
 Dictionary::Dictionary(const std::string& filename)
 {
@@ -24,6 +26,27 @@ std::vector<size_t> Dictionary::validWordsIndices(const std::string& characters)
     return validIndices;
 }
 
+// Return valid word indices that can be formed with characters and must include at least one mandatory letter
+std::vector<size_t> Dictionary::validWordsIndices(const std::string& characters, const std::string& mandatory_letters) const
+{
+    std::vector<size_t> validIndices, validIndices_cur;
+    for (const char& c: mandatory_letters)
+    {
+        validIndices_cur = validWordsIndices(characters + std::string(1, c));
+        for (const auto& idx : validIndices_cur) {
+            const std::string& word = words[idx];
+            if (word.find(c) != std::string::npos) {
+                validIndices.push_back(idx);
+            }
+        }
+    }
+
+    // Remove non-unique indices
+    std::sort(validIndices.begin(), validIndices.end());
+    validIndices.erase(std::unique(validIndices.begin(), validIndices.end()), validIndices.end());
+    return validIndices;
+}
+
 void Dictionary::filterValidWords(const std::string& characters)
 {
     std::vector<size_t> validIndices = validWordsIndices(characters);
@@ -34,7 +57,11 @@ void Dictionary::filterValidWords(const std::string& characters)
     words = std::move(filteredWords);
 }
 
-
+bool Dictionary::contains(const std::string& word) const
+{
+    // TODO: if slow, optimize with hash set
+    return std::find(words.begin(), words.end(), word) != words.end();
+}
 
 CharHistogram createCharHistogram(const std::string& str)
 {
