@@ -24,6 +24,9 @@ struct pair_hash {
 class Board 
 {
 private:
+    //Board is represented as a map of (x,y) -> letter
+    // X -> horizontal axis, pointing right
+    // Y -> vertical axis, pointing down
     std::unordered_map<std::pair<int, int>, char, pair_hash> board;
 
     struct iterator {

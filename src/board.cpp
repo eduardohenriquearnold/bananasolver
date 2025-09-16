@@ -16,9 +16,9 @@ void Board::print() const
     }
 
     // Print Board
-    for (int i = minu; i <= maxu; ++i)
+    for (int j = minv; j <= maxv; ++j)
     {
-        for (int j = minv; j <= maxv; ++j)
+        for (int i = minu; i <= maxu; ++i)
         {
             auto it = board.find({i, j});
             if (it != board.end())
@@ -48,7 +48,7 @@ std::string Board::uniqueLetters() const
 bool Board::isValid(const Dictionary& dict) const
 {
     std::string currentWord;
-    for (Board::iterator it=begin(); !it.ended(); ++it)
+    for (Board::iterator it=begin();; ++it)
     {
         if (*it == '\0')
         {
@@ -60,6 +60,7 @@ bool Board::isValid(const Dictionary& dict) const
         {
             currentWord += *it;
         }
+        if (it.ended()) break;
     }
     return true;
 }
@@ -88,18 +89,25 @@ Board::iterator& Board::iterator::operator++()
             v++;
     }
 
+    if (operator*() == '\0')
+        return *this;
+
     bool exists_adj1 = ptr->board.count(horizontal ? std::make_pair(u, v-1) : std::make_pair(u-1, v)) != 0;
     bool exists_adj2 = ptr->board.count(horizontal ? std::make_pair(u, v+1) : std::make_pair(u+1, v)) != 0;
 
+    // If there is a letter in the first adjacent direction, get delta to the beginning of the word
     int delta = 0;
-    // If there is a letter in the first adjacent direction, move until the beginning of the word
     if (exists_adj1)
         while (ptr->board.count(horizontal ? std::make_pair(u, v-delta-1) : std::make_pair(u-delta-1, v)) != 0)
             delta++;
 
     // If exists in either direction and not already visited, add to toCheck
-    if ((exists_adj1 || exists_adj2) && visited.count(horizontal ? std::make_tuple(u, v-delta, false) : std::make_tuple(u-delta, v, true)) == 0)
-        toCheck.emplace_back(horizontal ? std::make_tuple(u, v-delta, false) : std::make_tuple(u-delta, v, true));
+    auto new_pos = horizontal ? std::make_tuple(u, v-delta, false) : std::make_tuple(u-delta, v, true);
+    if ((exists_adj1 || exists_adj2) && visited.count(new_pos) == 0)
+    {
+        toCheck.push_back(new_pos);
+        visited.insert(new_pos);
+    }
 
     return *this;
 }
