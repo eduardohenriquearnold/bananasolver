@@ -29,6 +29,9 @@ std::vector<size_t> Dictionary::validWordsIndices(const std::string& characters)
 // Return valid word indices that can be formed with characters and must include at least one mandatory letter
 std::vector<size_t> Dictionary::validWordsIndices(const std::string& characters, const std::string& mandatory_letters) const
 {
+    if (mandatory_letters.empty())
+        return validWordsIndices(characters);
+
     std::vector<size_t> validIndices, validIndices_cur;
     for (const char& c: mandatory_letters)
     {
