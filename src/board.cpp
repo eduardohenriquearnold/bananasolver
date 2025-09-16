@@ -65,6 +65,56 @@ bool Board::isValid(const Dictionary& dict) const
     return true;
 }
 
+bool Board::addWord(const std::string& word)
+{
+    // If board is empty, add word at (0,0) horizontally
+    if (board.empty())
+    {
+        for (int i = 0; i < word.length(); ++i)
+            board[{i, 0}] = word[i];
+        return true;
+    }
+
+    // Try to place the word in where there are common letters, always orthogonally
+    // We don't try to add the letter in parallel because our assumption is that
+    // the longest words have already been placed first.
+    for (Board::iterator it=begin(); !it.ended(); ++it)
+    {
+        if (*it == '\0')
+            continue;
+
+        // Check if current letter matches any letter in the word
+        for (int w_idx = 0; w_idx < word.length(); ++w_idx)
+        {
+            // Skip until finding a common letter
+            if (*it != word[w_idx])
+                continue;
+
+            // Check that word can be placed by checking it won't overlap with
+            // other letters            
+            bool feasible = true;
+            for (int w_check=0; w_check<word.length() && feasible; ++w_check)
+            {
+                if (w_check == w_idx) continue;
+                auto pos = it.horizontal? std::make_pair(it.u, it.v+w_check-w_idx) : std::make_pair(it.u+w_check-w_idx, it.v);
+                feasible = board.count(pos) == 0;
+            }
+
+            if (feasible)
+            {
+                for (int w_check=0; w_check<word.length(); ++w_check)
+                {
+                    auto pos = it.horizontal? std::make_pair(it.u, it.v+w_check-w_idx) : std::make_pair(it.u+w_check-w_idx, it.v);
+                    board[pos] = word[w_check];
+                }
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 // Iterator functions
 Board::iterator Board::begin() const
 {
