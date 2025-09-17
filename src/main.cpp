@@ -37,7 +37,11 @@ bool solve(const Dictionary& dict, Board& board, std::string pool) {
                 // Update the pool by removing the used letters
                 std::string new_pool(pool);
                 for (char c : word)
-                    new_pool.erase(std::remove(new_pool.begin(), new_pool.end(), c), new_pool.end());
+                {
+                    auto it = std::find(new_pool.begin(),new_pool.end(),c);
+                    if (it != new_pool.end())
+                        new_pool.erase(it);
+                }
                 // Recursively call for the next iteration
                 if (solve(dict, board, new_pool))
                     return true;
