@@ -100,6 +100,7 @@ bool Board::addWord(const std::string& word)
                 feasible = board.count(pos) == 0;
             }
 
+            // Add the word to the board
             if (feasible)
             {
                 for (int w_check=0; w_check<word.length(); ++w_check)

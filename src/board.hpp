@@ -46,6 +46,7 @@ public:
     Board(const Board& other): board(other.board) {}
 
     void print() const;
+    size_t size() const { return board.size(); }
 
     // Checks if all words on the board are valid (any word touching)
     bool isValid(const Dictionary& dict) const;

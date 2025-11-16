@@ -41,3 +41,8 @@ All words must be UPPERCASE.
 
 ## Contributing
 If you would like to contribute to the project, feel free to fork the repository and submit a pull request with your changes.
+
+## Benchmark
+```sh
+ ./bananagrams aisdjaplomwhnjqeoriwikmnbcvzxbrtgwijfgnhbgvfgdeeeooopliiieuuaertldj ../dictionary.txt 
+ ```

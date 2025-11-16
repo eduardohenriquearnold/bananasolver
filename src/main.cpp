@@ -75,6 +75,10 @@ int main(int argc, char* argv[]) {
     Board board;
     if (solve(dict, board, pool)) {
         board.print();
+        // Sanity check to confirm all letters in pool were used
+        if (board.size() != pool.size()) {
+            throw std::runtime_error("Error: Not all letters were used in the solution.");
+        }
     } else {
         std::cout << "No solution exists." << std::endl;
     }

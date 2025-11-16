@@ -22,6 +22,7 @@ std::vector<size_t> Dictionary::validWordsIndices(const std::string& characters)
     std::vector<size_t> validIndices;
     const CharHistogram pool = createCharHistogram(characters);
     for (size_t i = 0; i < words.size(); ++i) {
+        // TODO: potentially pre-compute and store histograms for all dict words to speed this up
         const CharHistogram wordHist = createCharHistogram(words[i]);
         if (canFormWord(wordHist, pool))
             validIndices.push_back(i);
