@@ -6,8 +6,11 @@
 Dictionary::Dictionary(const std::string& filename)
 {
     // Load words from the file
-    // Expects line break delimiters
     std::ifstream file(filename);
+    if (!file.is_open()) {
+        throw std::runtime_error("Failed to open dictionary file: " + filename);
+    }
+    // Expects line break delimiters
     std::string word;
     while (std::getline(file, word)) {
         words.push_back(word);
@@ -17,9 +20,9 @@ Dictionary::Dictionary(const std::string& filename)
 std::vector<size_t> Dictionary::validWordsIndices(const std::string& characters) const
 {
     std::vector<size_t> validIndices;
-    CharHistogram pool = createCharHistogram(characters);
+    const CharHistogram pool = createCharHistogram(characters);
     for (size_t i = 0; i < words.size(); ++i) {
-        CharHistogram wordHist = createCharHistogram(words[i]);
+        const CharHistogram wordHist = createCharHistogram(words[i]);
         if (canFormWord(wordHist, pool))
             validIndices.push_back(i);
     }

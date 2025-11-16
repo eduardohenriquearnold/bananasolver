@@ -1,4 +1,4 @@
-# Bananagrams
+# Bananasolver
 
 ## Project Overview
 Bananagrams is a word game that challenges players to create a grid of interconnected words using a collection of letter tiles. This project implements a solver that presents a valid board given a list of valid words (aka dictionary) and a list of letters in the pool.
@@ -21,17 +21,23 @@ cmake ..
 cmake --build .
 ```
 
-
 ## Running the Application
 After building the project, you can run the application using the following command:
 ```sh
-./bananagrams [-d path_to_dictionary.txt] <letters>
+./bananagrams <letters> [<path_to_dictionary>]
 
-# e.g.
+# e.g. (assumes dictionary in path `./dictionary.txt`)
 ./bananagrams aikplawopdaklwdiaskilijeuuaoilmnwiet
-```
 
-If not provided, the path to the dictionary is assumed to be `./dictionary.txt`.
+# e.g. explicit dictionary location
+./bananagrams aikplawopdaklwdiaskilijeuuaoilmnwiet ./path_to_dictionary.txt
+```
+Note: if the second argument is not provided, the path to the dictionary is assumed to be `./dictionary.txt`.
+
+## Dictionary structure
+The dictionary file is a text file with words separated by line breaks.
+The [default dictionary file](./dictionary.txt) provided is the valid Scrabble words for the English language.
+All words must be UPPERCASE.
 
 ## Contributing
 If you would like to contribute to the project, feel free to fork the repository and submit a pull request with your changes.

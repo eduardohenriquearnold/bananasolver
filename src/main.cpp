@@ -56,16 +56,19 @@ bool solve(const Dictionary& dict, Board& board, std::string pool) {
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {
-        std::cerr << "Usage: " << argv[0] << " <letters>" << std::endl;
+        std::cerr << "Usage: " << argv[0] << " <letters> [dictionary_path]" << std::endl;
         return 1;
     }
+
+    // Set dictionary path to default or user-provided value
+    const std::string dictionaryPath = (argc > 2) ? argv[2] : "./dictionary.txt";
 
     // Get upper-case version of the letters available in the pool
     std::string pool(argv[1]);
     std::transform(pool.begin(), pool.end(), pool.begin(), ::toupper);
 
     // Initialize and filter dictionary to contain only feasible words given pool
-    Dictionary dict("../dictionary.txt");
+    Dictionary dict(dictionaryPath);
     dict.filterValidWords(pool);
 
     // Create board and find solution
