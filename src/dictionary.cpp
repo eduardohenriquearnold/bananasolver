@@ -17,47 +17,24 @@ Dictionary::Dictionary(const std::string& filename)
     }
 }
 
-std::vector<size_t> Dictionary::validWordsIndices(const std::string& characters) const
+std::vector<size_t> Dictionary::validWordsIndices(const CharHistogram& hist, const CharHistogram& mandatory_hist={}) const
 {
     std::vector<size_t> validIndices;
-    const CharHistogram pool = createCharHistogram(characters);
     for (size_t i = 0; i < words.size(); ++i) {
         // TODO: potentially pre-compute and store histograms for all dict words to speed this up
         const CharHistogram wordHist = createCharHistogram(words[i]);
-        if (canFormWord(wordHist, pool))
+        if (canFormWord(wordHist, hist, mandatory_hist))
             validIndices.push_back(i);
     }
     return validIndices;
 }
 
-// Return valid word indices that can be formed with characters and must include at least one mandatory letter
-std::vector<size_t> Dictionary::validWordsIndices(const std::string& characters, const std::string& mandatory_letters) const
+
+void Dictionary::filterValidWords(const CharHistogram& hist)
 {
-    if (mandatory_letters.empty())
-        return validWordsIndices(characters);
-
-    std::vector<size_t> validIndices, validIndices_cur;
-    for (const char& c: mandatory_letters)
-    {
-        validIndices_cur = validWordsIndices(characters + std::string(1, c));
-        for (const auto& idx : validIndices_cur) {
-            const std::string& word = words[idx];
-            if (word.find(c) != std::string::npos) {
-                validIndices.push_back(idx);
-            }
-        }
-    }
-
-    // Remove non-unique indices
-    std::sort(validIndices.begin(), validIndices.end());
-    validIndices.erase(std::unique(validIndices.begin(), validIndices.end()), validIndices.end());
-    return validIndices;
-}
-
-void Dictionary::filterValidWords(const std::string& characters)
-{
-    std::vector<size_t> validIndices = validWordsIndices(characters);
+    std::vector<size_t> validIndices = validWordsIndices(hist);
     std::vector<std::string> filteredWords;
+    filteredWords.reserve(validIndices.size());
     for (size_t index : validIndices) {
         filteredWords.push_back(words[index]);
     }
@@ -78,13 +55,14 @@ CharHistogram createCharHistogram(const std::string& str)
         if (hist.contains(ch))
             hist[ch]++;
         else
-            hist[ch] = 0;
+            hist[ch] = 1;
     }
     return hist;
 }
 
-bool canFormWord(const CharHistogram& wordHist, const CharHistogram& poolHist)
+bool canFormWord(const CharHistogram& wordHist, const CharHistogram& poolHist, const CharHistogram& mandatoryHist)
 {
+    bool mandatory_found = mandatoryHist.empty();
     for (const auto& [ch, count]: wordHist)
     {
         if (auto search = poolHist.find(ch); search != poolHist.end())
@@ -94,6 +72,9 @@ bool canFormWord(const CharHistogram& wordHist, const CharHistogram& poolHist)
         }
         else
             return false;
+
+        if (!mandatory_found && mandatoryHist.contains(ch))
+            mandatory_found = true;
     }
-    return true;
+    return mandatory_found;
 }

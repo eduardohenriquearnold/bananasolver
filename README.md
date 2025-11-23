@@ -44,5 +44,10 @@ If you would like to contribute to the project, feel free to fork the repository
 
 ## Benchmark
 ```sh
+ # Very long timeout
  ./bananagrams aisdjaplomwhnjqeoriwikmnbcvzxbrtgwijfgnhbgvfgdeeeooopliiieuuaertldj ../dictionary.txt 
+
+ # Incorrect number of counts
+ ./bananagrams aaaeeeeiiiioooouuuuplplplkjmnnnhgfghtrererrrawqxzp ../dictionary.txt 
+
  ```

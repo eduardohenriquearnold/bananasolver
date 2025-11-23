@@ -8,18 +8,29 @@ typedef std::unordered_map<char, int> CharHistogram;
 
 struct Dictionary
 {
+    // Load dictionary from file
     Dictionary(const std::string& filename);
-    // Find all valid words that can be formed with given characters
-    std::vector<size_t> validWordsIndices(const std::string& characters) const;
-    // Find all valid words that can be formed with given characters, containing at least 1 mandatory letters
-    std::vector<size_t> validWordsIndices(const std::string& characters, const std::string& mandatory_letters) const;
-    void filterValidWords(const std::string& characters);
+
+    // Find all valid words that can be formed with given characters, containing at least one char of mandatory histogram.
+    // If mandatory_hist not provided, find all valid words that can be formed with given hist.
+    std::vector<size_t> validWordsIndices(const CharHistogram& hist, const CharHistogram& mandatory_hist) const;
+
+    // Remove all words that cannot be formed with given characters histogram
+    void filterValidWords(const CharHistogram& hist);
+
+    // Check if word is in dictionary
     bool contains(const std::string& word) const;
 
-    std::vector<std::string> words;
+    const std::string& operator[](size_t index) const { return words[index]; }
+
+    private:
+        std::vector<std::string> words;
 };
 
 
 CharHistogram createCharHistogram(const std::string& str);
-bool canFormWord(const CharHistogram& wordHist, const CharHistogram& poolHist);
+
+// Check if a word (given its histogram) can be formed with given pool histogram and contains at least one char from mandatory histogram
+// If mandatoryHist is empty, no mandatory character is required
+bool canFormWord(const CharHistogram& wordHist, const CharHistogram& poolHist, const CharHistogram& mandatoryHist);
 

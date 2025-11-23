@@ -34,14 +34,17 @@ void Board::print() const
     }
 }
 
-std::string Board::uniqueLetters() const
+CharHistogram Board::getHistogram() const
 {
-    std::unordered_set<char> letters;
+    CharHistogram hist;
     for (const auto& [pos, letter] : board)
     {
-        letters.insert(letter);
+        if (hist.contains(letter))
+            hist[letter]++;
+        else
+            hist[letter] = 1;
     }
-    return std::string(letters.begin(), letters.end());
+    return hist;
 }
 
 
