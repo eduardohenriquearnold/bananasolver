@@ -32,5 +32,6 @@ CharHistogram createCharHistogram(const std::string& str);
 
 // Check if a word (given its histogram) can be formed with given pool histogram and a single letter from mandatory histogram.
 // If mandatoryHist is empty, check if word can be formed with poolHist alone.
-bool canFormWord(const CharHistogram& wordHist, const CharHistogram& poolHist, const CharHistogram& mandatoryHist);
+// If intersectionChar is provided, set it to the character from mandatoryHist used in the word (if mandatoryHist is provided).
+bool canFormWord(const CharHistogram& wordHist, const CharHistogram& poolHist, const CharHistogram& mandatoryHist, char* intersectionChar=nullptr);
 

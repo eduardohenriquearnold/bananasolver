@@ -5,26 +5,25 @@
 #include "dictionary.hpp"
 #include "board.hpp"
 
-// Update the pool histogram by removing letters used in the new board compared to the old board
-void updatePool(const CharHistogram& oldBoard, const CharHistogram& newBoard, CharHistogram& pool)
-{
-    for (const auto& [ch, newCount] : newBoard)
+// Remove letters used in wordHist from pool (except intersectionChar which is already on the board)
+void updatePool(CharHistogram& pool, CharHistogram wordHist, char intersectionChar) {
+    for (const auto& [ch, count] : wordHist)
     {
-        int oldCount = oldBoard.contains(ch) ? oldBoard.at(ch) : 0;
-        int usedCount = newCount - oldCount;
+        int usedCount = count;
+        if (ch == intersectionChar)
+            usedCount -= 1; // One letter is already on the board
+
         if (usedCount > 0)
         {
             if (!pool.contains(ch))
-                throw std::runtime_error("Error: Board uses letters not in the pool.");
+                throw std::runtime_error("Error: Word uses letters not in the pool.");
 
             pool[ch] -= usedCount;
             if (pool[ch] == 0)
                 pool.erase(ch);
             else if (pool[ch] < 0)
-                throw std::runtime_error("Error: Board uses more letters than available in the pool.");
+                throw std::runtime_error("Error: Word uses more letters than available in the pool.");
         }
-        else if (usedCount < 0)
-            throw std::runtime_error("Error: New board has fewer letters than old board.");
     }
 }
 
@@ -42,9 +41,10 @@ bool solve(const Dictionary& dict, Board& board, CharHistogram pool) {
         return true;
 
     Board oldBoard(board);
+    CharHistogram boardHist = board.getHistogram();
 
     // 1. Find all valid words formed with current pool + 1 letter already in board
-    std::vector<size_t> validWordsIdx = dict.validWordsIndices(pool, board.getHistogram());
+    std::vector<size_t> validWordsIdx = dict.validWordsIndices(pool, boardHist);
 
     // 2. Sort by largest length DESC
     std::sort(validWordsIdx.begin(), validWordsIdx.end(), [&](size_t a, size_t b) {
@@ -52,14 +52,22 @@ bool solve(const Dictionary& dict, Board& board, CharHistogram pool) {
     });
 
     // 3. Try to Place words
-    for (const auto& idx : validWordsIdx) {
+    for (const auto& idx : validWordsIdx) 
+    {
         const std::string& word = dict[idx];
-        if (board.addWord(word)) {
+        CharHistogram wordHist = createCharHistogram(word);
+        char intersectionChar;
+        // Determine intersection character
+        canFormWord(wordHist, pool, boardHist, &intersectionChar);
+
+        if (board.addWord(word, intersectionChar)) 
+        {
             // If the word was successfully added, check board is valid
-            if (board.isValid(dict)) {
+            if (board.isValid(dict))
+            {
                 // Update the pool by removing the used letters
                 CharHistogram newPool(pool);
-                updatePool(oldBoard.getHistogram(), board.getHistogram(), newPool);
+                updatePool(newPool, wordHist, intersectionChar);
                 // Recursively call for the next iteration
                 if (solve(dict, board, newPool))
                     return true;

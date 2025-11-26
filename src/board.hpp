@@ -55,7 +55,7 @@ public:
     CharHistogram getHistogram() const;
 
     // Try to add a word to the board
-    bool addWord(const std::string& word);
+    bool addWord(const std::string& word, char intersectionChar);
 
     // Iterators
     iterator begin() const;

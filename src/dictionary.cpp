@@ -60,7 +60,7 @@ CharHistogram createCharHistogram(const std::string& str)
     return hist;
 }
 
-bool canFormWord(const CharHistogram& wordHist, const CharHistogram& poolHist, const CharHistogram& mandatoryHist)
+bool canFormWord(const CharHistogram& wordHist, const CharHistogram& poolHist, const CharHistogram& mandatoryHist, char* intersectionChar)
 {
     int mandatory_used = 0;
     for (const auto& [ch, count]: wordHist)
@@ -71,6 +71,8 @@ bool canFormWord(const CharHistogram& wordHist, const CharHistogram& poolHist, c
             if (count - count_in_pool > 1 || !mandatoryHist.contains(ch) || mandatory_used>0)
                 return false;
             mandatory_used++;
+            if (intersectionChar)
+                *intersectionChar = ch;
         }
     }
 

@@ -68,7 +68,7 @@ bool Board::isValid(const Dictionary& dict) const
     return true;
 }
 
-bool Board::addWord(const std::string& word)
+bool Board::addWord(const std::string& word, char intersectionChar)
 {
     // If board is empty, add word at (0,0) horizontally
     if (board.empty())
@@ -78,44 +78,39 @@ bool Board::addWord(const std::string& word)
         return true;
     }
 
+    int intersectionIdx = word.find(intersectionChar);
+    if (intersectionIdx == std::string::npos)
+        throw std::runtime_error("Error: Intersection character not found in word.");
+
     // Try to place the word in where there are common letters, always orthogonally
     // We don't try to add the letter in parallel because our assumption is that
     // the longest words have already been placed first.
     for (Board::iterator it=begin(); !it.ended(); ++it)
     {
-        if (*it == '\0')
+        if (*it == '\0' || *it != intersectionChar)
             continue;
 
-        // Check if current letter matches any letter in the word
-        for (int w_idx = 0; w_idx < word.length(); ++w_idx)
+        // Check that word can be placed by checking it won't overlap with
+        // other letters            
+        bool feasible = true;
+        for (int w_index=0; w_index<word.length() && feasible; ++w_index)
         {
-            // Skip until finding a common letter
-            if (*it != word[w_idx])
-                continue;
+            if (w_index == intersectionIdx) continue;
+            auto pos = it.horizontal? std::make_pair(it.u, it.v+w_index-intersectionIdx) : std::make_pair(it.u+w_index-intersectionIdx, it.v);
+            feasible = board.count(pos) == 0;
+        }
 
-            // Check that word can be placed by checking it won't overlap with
-            // other letters            
-            bool feasible = true;
-            for (int w_check=0; w_check<word.length() && feasible; ++w_check)
+        // Add the word to the board
+        if (feasible)
+        {
+            for (int w_index=0; w_index<word.length(); ++w_index)
             {
-                if (w_check == w_idx) continue;
-                auto pos = it.horizontal? std::make_pair(it.u, it.v+w_check-w_idx) : std::make_pair(it.u+w_check-w_idx, it.v);
-                feasible = board.count(pos) == 0;
+                auto pos = it.horizontal? std::make_pair(it.u, it.v+w_index-intersectionIdx) : std::make_pair(it.u+w_index-intersectionIdx, it.v);
+                board[pos] = word[w_index];
             }
-
-            // Add the word to the board
-            if (feasible)
-            {
-                for (int w_check=0; w_check<word.length(); ++w_check)
-                {
-                    auto pos = it.horizontal? std::make_pair(it.u, it.v+w_check-w_idx) : std::make_pair(it.u+w_check-w_idx, it.v);
-                    board[pos] = word[w_check];
-                }
-                return true;
-            }
+            return true;
         }
     }
-
     return false;
 }
 
