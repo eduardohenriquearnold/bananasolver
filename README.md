@@ -1,5 +1,7 @@
 # Bananasolver
 
+![project-logo](assets/logo.jpg)
+
 ## Project Overview
 Bananagrams is a word game that challenges players to create a grid of interconnected words using a collection of letter tiles. This project implements a solver that presents a valid board given a list of valid words (aka dictionary) and a list of letters in the pool.
 
@@ -39,15 +41,14 @@ The dictionary file is a text file with words separated by line breaks.
 The [default dictionary file](./dictionary.txt) provided is the valid Scrabble words for the English language.
 All words must be UPPERCASE.
 
-## Contributing
-If you would like to contribute to the project, feel free to fork the repository and submit a pull request with your changes.
-
 ## Benchmark
 ```sh
- # Example 1 - 1.7s
- ./bananagrams aaaeeeeiiiioooouuuuplplplkjmnnnhgfghtrererrrawqxzp ../dictionary.txt 
+ # Example 1 - 243ms (O3 optimization)
+ ./bananagrams aaaeeeeiiiioooouuuuplplplkjmnnnhgfghtrererrrawqxzp
 
  # Example 2 - Very long timeout
- ./bananagrams aisdjaplomwhnjqeoriwikmnbcvzxbrtgwijfgnhbgvfgdeeeooopliiieuuaertldj ../dictionary.txt 
-
+ ./bananagrams aisdjaplomwhnjqeoriwikmnbcvzxbrtgwijfgnhbgvfgdeeeooopliiieuuaertldj
  ```
+
+## Contributing
+If you would like to contribute to the project, feel free to fork the repository and submit a pull request with your changes.
