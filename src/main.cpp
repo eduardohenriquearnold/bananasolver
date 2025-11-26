@@ -14,19 +14,17 @@ void updatePool(const CharHistogram& oldBoard, const CharHistogram& newBoard, Ch
         int usedCount = newCount - oldCount;
         if (usedCount > 0)
         {
-            if (pool.contains(ch))
-            {
-                pool[ch] -= usedCount;
-                if (pool[ch] == 0)
-                    pool.erase(ch);
-                else if (pool[ch] < 0)
-                    throw std::runtime_error("Error: Board uses more letters than available in the pool.");
-            }
-            else
-            {
+            if (!pool.contains(ch))
                 throw std::runtime_error("Error: Board uses letters not in the pool.");
-            }
+
+            pool[ch] -= usedCount;
+            if (pool[ch] == 0)
+                pool.erase(ch);
+            else if (pool[ch] < 0)
+                throw std::runtime_error("Error: Board uses more letters than available in the pool.");
         }
+        else if (usedCount < 0)
+            throw std::runtime_error("Error: New board has fewer letters than old board.");
     }
 }
 

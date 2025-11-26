@@ -17,7 +17,7 @@ Dictionary::Dictionary(const std::string& filename)
     }
 }
 
-std::vector<size_t> Dictionary::validWordsIndices(const CharHistogram& hist, const CharHistogram& mandatory_hist={}) const
+std::vector<size_t> Dictionary::validWordsIndices(const CharHistogram& hist, const CharHistogram& mandatory_hist) const
 {
     std::vector<size_t> validIndices;
     for (size_t i = 0; i < words.size(); ++i) {
@@ -62,19 +62,19 @@ CharHistogram createCharHistogram(const std::string& str)
 
 bool canFormWord(const CharHistogram& wordHist, const CharHistogram& poolHist, const CharHistogram& mandatoryHist)
 {
-    bool mandatory_found = mandatoryHist.empty();
+    int mandatory_used = 0;
     for (const auto& [ch, count]: wordHist)
     {
-        if (auto search = poolHist.find(ch); search != poolHist.end())
+        int count_in_pool = poolHist.contains(ch) ? poolHist.at(ch) : 0;
+        if (count_in_pool < count)
         {
-            if (search->second < count)
+            if (count - count_in_pool > 1 || !mandatoryHist.contains(ch) || mandatory_used>0)
                 return false;
+            mandatory_used++;
         }
-        else
-            return false;
-
-        if (!mandatory_found && mandatoryHist.contains(ch))
-            mandatory_found = true;
     }
-    return mandatory_found;
+
+    if (!mandatoryHist.empty())
+        return mandatory_used == 1;
+    return true;
 }
