@@ -20,6 +20,8 @@ Dictionary::Dictionary(const std::string& filename)
 std::vector<size_t> Dictionary::validWordsIndices(const CharHistogram& hist, const CharHistogram& mandatory_hist) const
 {
     std::vector<size_t> validIndices;
+    // Reserve max possible size to avoid multiple allocations
+    validIndices.reserve(words.size());
     for (size_t i = 0; i < words.size(); ++i) {
         // TODO: potentially pre-compute and store histograms for all dict words to speed this up
         const CharHistogram wordHist = createCharHistogram(words[i]);

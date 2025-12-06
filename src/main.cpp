@@ -6,7 +6,7 @@
 #include "board.hpp"
 
 // Remove letters used in wordHist from pool (except intersectionChar which is already on the board)
-void updatePool(CharHistogram& pool, CharHistogram wordHist, char intersectionChar) {
+void updatePool(CharHistogram& pool, const CharHistogram& wordHist, char intersectionChar) {
     for (const auto& [ch, count] : wordHist)
     {
         int usedCount = count;
@@ -40,8 +40,8 @@ bool solve(const Dictionary& dict, Board& board, CharHistogram pool) {
     if (pool.empty())
         return true;
 
-    Board oldBoard(board);
-    CharHistogram boardHist = board.getHistogram();
+    const Board oldBoard(board);
+    const CharHistogram boardHist = board.getHistogram();
 
     // 1. Find all valid words formed with current pool + 1 letter already in board
     std::vector<size_t> validWordsIdx = dict.validWordsIndices(pool, boardHist);
@@ -57,7 +57,8 @@ bool solve(const Dictionary& dict, Board& board, CharHistogram pool) {
         const std::string& word = dict[idx];
         CharHistogram wordHist = createCharHistogram(word);
         char intersectionChar;
-        // Determine intersection character
+        // We already know the word can be formed, but use the function to determine
+        // the intersection character (already on the board)
         canFormWord(wordHist, pool, boardHist, &intersectionChar);
 
         if (board.addWord(word, intersectionChar)) 
