@@ -17,12 +17,30 @@ Dictionary::Dictionary(const std::string& filename)
     }
 }
 
+std::vector<size_t> Dictionary::validWordsIndices(const CharHistogram& hist, const CharHistogram& mandatory_hist) const
+{
+    std::vector<size_t> validIndices;
+    // Reserve max possible size to avoid multiple allocations
+    validIndices.reserve(words.size());
+    for (size_t i = 0; i < words.size(); ++i) {
+        // TODO: potentially pre-compute and store histograms for all dict words to speed this up
+        const CharHistogram wordHist = createCharHistogram(words[i]);
+        if (canFormWord(wordHist, hist, mandatory_hist))
+            validIndices.push_back(i);
+    }
+    return validIndices;
+}
+
+
 void Dictionary::filterValidWords(const CharHistogram& hist)
 {
-    words.erase(std::remove_if(words.begin(), words.end(), [&](const std::string& word) {
-        CharHistogram wordHist = createCharHistogram(word);
-        return !canFormWord(wordHist, hist, {});
-    }), words.end());
+    std::vector<size_t> validIndices = validWordsIndices(hist);
+    std::vector<std::string> filteredWords;
+    filteredWords.reserve(validIndices.size());
+    for (size_t index : validIndices) {
+        filteredWords.push_back(words[index]);
+    }
+    words = std::move(filteredWords);
 }
 
 bool Dictionary::contains(const std::string& word) const
@@ -61,34 +79,6 @@ bool canFormWord(const CharHistogram& wordHist, const CharHistogram& poolHist, c
     }
 
     if (!mandatoryHist.empty())
-    {
-        // Have already used one mandatory character
-        if (mandatory_used == 1)
-            return true;
-
-        // Haven't used a mandatory character yet, check if there is at least one
-        // overlapping character with mandatoryHist and use the first one found
-        // Ideally we would return all possible intersection characters, but that
-        // would require modifications to the add word logic to try all possibilities.
-        for (const auto& [ch, count]: wordHist)
-        {
-            if (mandatoryHist.contains(ch))
-            {
-                if (intersectionChar)
-                    *intersectionChar = ch;
-                return true;
-            }
-        }
-
-        return false;
-    }
+        return mandatory_used == 1;
     return true;
-}
-
-void filterValidWordsIndex(std::list<size_t>& indices, const Dictionary& dict, const CharHistogram& hist, const CharHistogram& mandatory_hist)
-{
-    indices.remove_if([&](size_t index) {
-        const CharHistogram wordHist = createCharHistogram(dict[index]);
-        return !canFormWord(wordHist, hist, mandatory_hist);
-    });
 }

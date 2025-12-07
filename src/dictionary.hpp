@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
 #include <vector>
-#include <list>
 #include <unordered_map>
 
 typedef std::unordered_map<char, int> CharHistogram;
@@ -12,6 +11,10 @@ struct Dictionary
     // Load dictionary from file
     Dictionary(const std::string& filename);
 
+    // Find all valid words that can be formed with given characters, containing at least one char of mandatory histogram.
+    // If mandatory_hist not provided, find all valid words that can be formed with given hist.
+    std::vector<size_t> validWordsIndices(const CharHistogram& hist, const CharHistogram& mandatory_hist={}) const;
+
     // Remove all words that cannot be formed with given characters histogram
     void filterValidWords(const CharHistogram& hist);
 
@@ -19,7 +22,6 @@ struct Dictionary
     bool contains(const std::string& word) const;
 
     const std::string& operator[](size_t index) const { return words[index]; }
-    size_t size() const { return words.size(); }
 
     private:
         std::vector<std::string> words;
@@ -33,5 +35,3 @@ CharHistogram createCharHistogram(const std::string& str);
 // If intersectionChar is provided, set it to the character from mandatoryHist used in the word (if mandatoryHist is provided).
 bool canFormWord(const CharHistogram& wordHist, const CharHistogram& poolHist, const CharHistogram& mandatoryHist, char* intersectionChar=nullptr);
 
-// Given initial list of word indices for a dictionary, filter out those that cannot be formed with given histogram and mandatory histogram.
-void filterValidWordsIndex(std::list<size_t>& indices, const Dictionary& dict, const CharHistogram& hist, const CharHistogram& mandatory_hist={});
