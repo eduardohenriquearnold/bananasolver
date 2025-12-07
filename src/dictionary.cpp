@@ -15,6 +15,11 @@ Dictionary::Dictionary(const std::string& filename)
     while (std::getline(file, word)) {
         words.push_back(word);
     }
+
+    // Pre-compute histograms for all words
+    wordHistograms.reserve(words.size());
+    for (const auto& w : words)
+        wordHistograms.push_back( createCharHistogram(w) );
 }
 
 std::vector<size_t> Dictionary::validWordsIndices(const CharHistogram& hist, const CharHistogram& mandatory_hist) const
@@ -24,7 +29,7 @@ std::vector<size_t> Dictionary::validWordsIndices(const CharHistogram& hist, con
     validIndices.reserve(words.size());
     for (size_t i = 0; i < words.size(); ++i) {
         // TODO: potentially pre-compute and store histograms for all dict words to speed this up
-        const CharHistogram wordHist = createCharHistogram(words[i]);
+        const CharHistogram& wordHist = getWordHistogram(i);
         if (canFormWord(wordHist, hist, mandatory_hist))
             validIndices.push_back(i);
     }
@@ -41,6 +46,14 @@ void Dictionary::filterValidWords(const CharHistogram& hist)
         filteredWords.push_back(words[index]);
     }
     words = std::move(filteredWords);
+
+    // Filter wordHistograms accordingly
+    std::vector<CharHistogram> filteredHistograms;
+    filteredHistograms.reserve(validIndices.size());
+    for (size_t index : validIndices) {
+        filteredHistograms.push_back(wordHistograms[index]);
+    }
+    wordHistograms = std::move(filteredHistograms);
 }
 
 bool Dictionary::contains(const std::string& word) const

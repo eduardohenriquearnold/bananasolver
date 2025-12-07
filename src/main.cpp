@@ -55,7 +55,7 @@ bool solve(const Dictionary& dict, Board& board, CharHistogram pool) {
     for (const auto& idx : validWordsIdx) 
     {
         const std::string& word = dict[idx];
-        CharHistogram wordHist = createCharHistogram(word);
+        const CharHistogram& wordHist = dict.getWordHistogram(idx);
         char intersectionChar;
         // We already know the word can be formed, but use the function to determine
         // the intersection character (already on the board)

@@ -22,9 +22,11 @@ struct Dictionary
     bool contains(const std::string& word) const;
 
     const std::string& operator[](size_t index) const { return words[index]; }
+    const CharHistogram& getWordHistogram(size_t index) const { return wordHistograms[index]; }
 
     private:
         std::vector<std::string> words;
+        std::vector<CharHistogram> wordHistograms;
 };
 
 
