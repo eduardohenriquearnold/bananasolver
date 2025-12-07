@@ -1,5 +1,6 @@
 #include <iostream>
 #include <algorithm>
+#include <numeric>
 #include <unordered_set>
 
 #include "dictionary.hpp"
@@ -27,15 +28,14 @@ void updatePool(CharHistogram& pool, const CharHistogram& wordHist, char interse
     }
 }
 
-bool solve(const Dictionary& dict, Board& board, CharHistogram pool) {
+bool solve(const Dictionary& dict, Board& board, CharHistogram pool, std::list<size_t> validWordsIdx) {
     // Implement the backtracking algorithm to find all valid words
 
     // Steps
-    // 1. Find all valid words formed with current pool + 1 letter already in board
-    // 2. Sort by largest length DESC
-    // 3. Get word from top, try to place it in the board
-    // 4. If it could be placed, check for valid board (all words touching are valid)
-    // 5. If valid, repeat from (1) until pool is empty
+    // 1. Select all valid words formed with current pool + 1 letter already in board
+    // 2. Get word from top, try to place it in the board
+    // 3. If it could be placed, check for valid board (all words touching are valid)
+    // 4. If valid, repeat from (1) until pool is empty
     //    If invalid or not placed, reset board and get next word from list. If list empty, return False (back-track).
     if (pool.empty())
         return true;
@@ -43,22 +43,17 @@ bool solve(const Dictionary& dict, Board& board, CharHistogram pool) {
     const Board oldBoard(board);
     const CharHistogram boardHist = board.getHistogram();
 
-    // 1. Find all valid words formed with current pool + 1 letter already in board
-    std::vector<size_t> validWordsIdx = dict.validWordsIndices(pool, boardHist);
+    // 1. Filter all words that cannot be formed with current pool + 1 letter already in board
+    filterValidWordsIndex(validWordsIdx, dict, pool, boardHist);
 
-    // 2. Sort by largest length DESC
-    std::sort(validWordsIdx.begin(), validWordsIdx.end(), [&](size_t a, size_t b) {
-        return dict[a].length() > dict[b].length();
-    });
-
-    // 3. Try to Place words
-    for (const auto& idx : validWordsIdx) 
+    // 2. Try to Place words
+    for (auto idx_it = validWordsIdx.begin(); idx_it != validWordsIdx.end(); )
     {
-        const std::string& word = dict[idx];
+        const std::string& word = dict[*idx_it];
         CharHistogram wordHist = createCharHistogram(word);
-        char intersectionChar;
         // We already know the word can be formed, but use the function to determine
         // the intersection character (already on the board)
+        char intersectionChar;
         canFormWord(wordHist, pool, boardHist, &intersectionChar);
 
         if (board.addWord(word, intersectionChar)) 
@@ -70,12 +65,15 @@ bool solve(const Dictionary& dict, Board& board, CharHistogram pool) {
                 CharHistogram newPool(pool);
                 updatePool(newPool, wordHist, intersectionChar);
                 // Recursively call for the next iteration
-                if (solve(dict, board, newPool))
+                if (solve(dict, board, newPool, validWordsIdx))
                     return true;
             }
             // In case of failure, reset the board to previous state
             board = oldBoard;
         }
+
+        // Word could not be placed, remove it from valid words list
+        idx_it = validWordsIdx.erase(idx_it);
     }
 
     return false;
@@ -99,9 +97,16 @@ int main(int argc, char* argv[]) {
     Dictionary dict(dictionaryPath);
     dict.filterValidWords(pool);
 
+    // Create initial list of valid word indices, sorted by length DESC
+    std::list<size_t> validWordsIdx(dict.size());
+    std::iota(validWordsIdx.begin(), validWordsIdx.end(), 0);
+    validWordsIdx.sort([&](size_t a, size_t b) {
+        return dict[a].length() > dict[b].length();
+    });
+
     // Create board and find solution
     Board board;
-    if (solve(dict, board, pool)) {
+    if (solve(dict, board, pool, validWordsIdx)) {
         board.print();
         // Sanity check to confirm all letters in pool were used
         if (board.getHistogram() != pool) {
