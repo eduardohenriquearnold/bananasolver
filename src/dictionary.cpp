@@ -79,6 +79,26 @@ bool canFormWord(const CharHistogram& wordHist, const CharHistogram& poolHist, c
     }
 
     if (!mandatoryHist.empty())
-        return mandatory_used == 1;
+    {
+        // Have already used one mandatory character
+        if (mandatory_used == 1)
+            return true;
+
+        // Haven't used a mandatory character yet, check if there is at least one
+        // overlapping character with mandatoryHist and use the first one found
+        // Ideally we would return all possible intersection characters, but that
+        // would require modifications to the add word logic to try all possibilities.
+        for (const auto& [ch, count]: wordHist)
+        {
+            if (mandatoryHist.contains(ch))
+            {
+                if (intersectionChar)
+                    *intersectionChar = ch;
+                return true;
+            }
+        }
+
+        return false;
+    }
     return true;
 }
