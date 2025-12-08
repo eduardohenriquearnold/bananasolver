@@ -32,8 +32,8 @@ bool solve(const Dictionary& dict, Board& board, CharHistogram pool) {
 
     // Steps
     // 1. Find all valid words formed with current pool + 1 letter already in board
-    // 2. Sort by largest length DESC
-    // 3. Get word from top, try to place it in the board
+    // 2. Get word from top, try to place it in the board
+    //    Because dictionary is sorted by length descending, we get longest words first
     // 4. If it could be placed, check for valid board (all words touching are valid)
     // 5. If valid, repeat from (1) until pool is empty
     //    If invalid or not placed, reset board and get next word from list. If list empty, return False (back-track).
@@ -46,12 +46,7 @@ bool solve(const Dictionary& dict, Board& board, CharHistogram pool) {
     // 1. Find all valid words formed with current pool + 1 letter already in board
     std::vector<size_t> validWordsIdx = dict.validWordsIndices(pool, boardHist);
 
-    // 2. Sort by largest length DESC
-    std::sort(validWordsIdx.begin(), validWordsIdx.end(), [&](size_t a, size_t b) {
-        return dict[a].length() > dict[b].length();
-    });
-
-    // 3. Try to Place words
+    // 2. Try to Place words
     for (const auto& idx : validWordsIdx) 
     {
         const std::string& word = dict[idx];

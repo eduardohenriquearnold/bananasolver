@@ -40,6 +40,12 @@ std::vector<size_t> Dictionary::validWordsIndices(const CharHistogram& hist, con
 void Dictionary::filterValidWords(const CharHistogram& hist)
 {
     std::vector<size_t> validIndices = validWordsIndices(hist);
+
+    // Sort words by length descending, which will be useful for solving algorithm
+    std::sort(validIndices.begin(), validIndices.end(), [&](size_t a, size_t b) {
+        return words[a].length() > words[b].length();
+    });
+
     std::vector<std::string> filteredWords;
     filteredWords.reserve(validIndices.size());
     for (size_t index : validIndices) {
