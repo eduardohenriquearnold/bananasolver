@@ -28,7 +28,6 @@ std::vector<size_t> Dictionary::validWordsIndices(const CharHistogram& hist, con
     // Reserve max possible size to avoid multiple allocations
     validIndices.reserve(words.size());
     for (size_t i = 0; i < words.size(); ++i) {
-        // TODO: potentially pre-compute and store histograms for all dict words to speed this up
         const CharHistogram& wordHist = getWordHistogram(i);
         if (canFormWord(wordHist, hist, mandatory_hist))
             validIndices.push_back(i);
