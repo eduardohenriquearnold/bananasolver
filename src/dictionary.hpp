@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <unordered_set>
 
 typedef std::unordered_map<char, int> CharHistogram;
 
@@ -29,6 +30,7 @@ struct Dictionary
     private:
         std::vector<std::string> words;
         std::vector<CharHistogram> wordHistograms;
+        std::unordered_set<std::string> wordSet;
 };
 
 

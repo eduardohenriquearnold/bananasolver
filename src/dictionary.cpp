@@ -59,12 +59,16 @@ void Dictionary::filterValidWords(const CharHistogram& hist)
         filteredHistograms.push_back(wordHistograms[index]);
     }
     wordHistograms = std::move(filteredHistograms);
+
+    // Create wordSet for fast lookup
+    for (const auto& w : words) {
+        wordSet.insert(w);
+    }
 }
 
 bool Dictionary::contains(const std::string& word) const
 {
-    // TODO: if slow, optimize with hash set
-    return std::find(words.begin(), words.end(), word) != words.end();
+    return wordSet.contains(word);
 }
 
 CharHistogram createCharHistogram(const std::string& str)

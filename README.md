@@ -47,7 +47,7 @@ Using i7 1075 @ 2.6Ghz.
  # Example 1 - 180ms
  ./bananagrams aaaeeeeiiiioooouuuuplplplkjmnnnhgfghtrererrrawqxzp
 
- # Example 2 - 49s
+ # Example 2 - 2.142s
  ./bananagrams aisdjaplomwhnjqeoriwikmnbcvzxbrtgwijfgnhbgvfgdeeeooopliiieuuaertldj
  ```
 
