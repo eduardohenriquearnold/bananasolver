@@ -42,11 +42,12 @@ The [default dictionary file](./dictionary.txt) provided is the valid Scrabble w
 All words must be UPPERCASE.
 
 ## Benchmark
+Using i7 1075 @ 2.6Ghz.
 ```sh
- # Example 1 - 243ms (O3 optimization)
+ # Example 1 - 180ms
  ./bananagrams aaaeeeeiiiioooouuuuplplplkjmnnnhgfghtrererrrawqxzp
 
- # Example 2 - Very long timeout
+ # Example 2 - 49s
  ./bananagrams aisdjaplomwhnjqeoriwikmnbcvzxbrtgwijfgnhbgvfgdeeeooopliiieuuaertldj
  ```
 

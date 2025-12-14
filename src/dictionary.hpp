@@ -24,6 +24,8 @@ struct Dictionary
     const std::string& operator[](size_t index) const { return words[index]; }
     const CharHistogram& getWordHistogram(size_t index) const { return wordHistograms[index]; }
 
+    size_t size() const { return words.size(); }
+
     private:
         std::vector<std::string> words;
         std::vector<CharHistogram> wordHistograms;
@@ -37,3 +39,7 @@ CharHistogram createCharHistogram(const std::string& str);
 // If intersectionChar is provided, set it to the character from mandatoryHist used in the word (if mandatoryHist is provided).
 bool canFormWord(const CharHistogram& wordHist, const CharHistogram& poolHist, const CharHistogram& mandatoryHist, char* intersectionChar=nullptr);
 
+// Check if a word (given its histogram) can be formed with given pool histogram alone (no mandatory characters).
+// Effectively, passing this test doesn't guarantee that the word can be formed, but failing it guarantees it cannot be formed
+// given current pool. This is useful to filter out words that definitely cannot be formed.
+bool weaklyCanFormWord(const CharHistogram& wordHist, const CharHistogram& poolHist);

@@ -120,3 +120,22 @@ bool canFormWord(const CharHistogram& wordHist, const CharHistogram& poolHist, c
     }
     return true;
 }
+
+// Checks that no more than 2 letters are missing
+// 1 or 0 missing letters is acceptable in case one of them could be found in
+// the mandatory histogram
+bool weaklyCanFormWord(const CharHistogram& wordHist, const CharHistogram& poolHist)
+{
+    int missing_letters = 0;
+    for (const auto& [ch, count]: wordHist)
+    {
+        int count_in_pool = poolHist.contains(ch) ? poolHist.at(ch) : 0;
+        if (count_in_pool < count)
+        {
+            missing_letters += (count - count_in_pool);
+            if (missing_letters >= 2)
+                return false;
+        }
+    }
+    return true;
+}
