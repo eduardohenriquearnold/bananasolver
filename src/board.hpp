@@ -45,7 +45,6 @@ public:
     Board(){}
     Board(const Board& other): board(other.board) {}
 
-    void print() const;
     size_t size() const { return board.size(); }
 
     // Checks if all words on the board are valid (any word touching)
@@ -59,4 +58,7 @@ public:
 
     // Iterators
     iterator begin() const;
+    
+    // Output operator
+    friend std::ostream& operator<<(std::ostream& os, const Board& board);
 };

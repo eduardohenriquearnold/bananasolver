@@ -1,10 +1,12 @@
-#include <iostream>
 #include <unordered_set>
+#include <ostream>
 
 #include "board.hpp"
 
-void Board::print() const
+std::ostream& operator<<(std::ostream& os, const Board& board_)
 {
+    const auto& board = board_.board;
+
     // Get minimum and maximum indices
     int minu(0), minv(0), maxu(0), maxv(0);
     for (const auto& [pos, letter] : board)
@@ -23,15 +25,16 @@ void Board::print() const
             auto it = board.find({i, j});
             if (it != board.end())
             {
-                std::cout << it->second;
+                os << it->second;
             }
             else
             {
-                std::cout << " ";
+                os << " ";
             }
         }
-        std::cout << std::endl;
+        os << std::endl;
     }
+    return os;
 }
 
 CharHistogram Board::getHistogram() const
